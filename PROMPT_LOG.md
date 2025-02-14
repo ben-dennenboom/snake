@@ -67,6 +67,18 @@ Implemented classic Snake game with:
 - Game over handling
 - Arrow key controls
 
+## Adding AI Guidelines
+
+**Prompt:**
+> Don't forget to always update the prompt log. Is there a way to let you know that you always need to do this? Some document with a set of rules or something like that?
+
+**Response Summary:**
+- Created CONTRIBUTING_AI.md file with guidelines for AI assistants
+- Established rules for maintaining PROMPT_LOG.md
+- Added format templates for updates
+- Created procedures for documentation updates
+- Set commit message guidelines
+
 ## Current Status
 The game is now playable with all core mechanics implemented, featuring:
 - Loading screen
@@ -74,5 +86,6 @@ The game is now playable with all core mechanics implemented, featuring:
 - Classic snake gameplay
 - Score tracking
 - Game over screen
+- Comprehensive documentation including AI contribution guidelines
 
 *This log will be updated as development continues.* 
