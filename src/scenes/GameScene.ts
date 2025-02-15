@@ -211,13 +211,56 @@ export class GameScene extends Scene {
     setTopScore(this.score);
 
     // Show game over text
-    const text = this.add.text(gameConfig.width / 2, gameConfig.height / 2, 
-      'Game Over!\nPress ESC to return to menu', {
+    const gameOverText = this.add.text(gameConfig.width / 2, gameConfig.height / 2 - 50, 
+      'Game Over!', {
       align: 'center',
       fontSize: '48px',
       color: '#ff0000'
     });
-    text.setOrigin(0.5);
+    gameOverText.setOrigin(0.5);
+
+    // Create return to menu button
+    const buttonWidth = 200;
+    const buttonHeight = 50;
+    const button = this.add.rectangle(
+      gameConfig.width / 2,
+      gameConfig.height / 2 + 50,
+      buttonWidth,
+      buttonHeight,
+      0x00ff00
+    );
+    
+    const buttonText = this.add.text(gameConfig.width / 2, gameConfig.height / 2 + 50,
+      'Return to Menu', {
+      fontSize: '24px',
+      color: '#000000'
+    });
+    buttonText.setOrigin(0.5);
+
+    // Make button interactive
+    button.setInteractive();
+    
+    // Add hover effects
+    button.on('pointerover', () => {
+      button.setFillStyle(0x00dd00);
+      this.input.setDefaultCursor('pointer');
+    });
+    
+    button.on('pointerout', () => {
+      button.setFillStyle(0x00ff00);
+      this.input.setDefaultCursor('default');
+    });
+    
+    button.on('pointerdown', () => {
+      this.cleanupScene();
+      this.scene.start('MenuScene');
+    });
+
+    // Keep keyboard ESC functionality for desktop
+    this.input.keyboard?.addKey('ESC').on('down', () => {
+      this.cleanupScene();
+      this.scene.start('MenuScene');
+    });
   }
 
   private cleanupScene() {
