@@ -17,6 +17,13 @@ export class GameScene extends Scene {
     super({ key: 'GameScene' });
   }
 
+  init() {
+    // Reset game state
+    this.score = 0;
+    this.moveTimer = 0;
+    this.gameOver = false;
+  }
+
   create() {
     // Calculate grid dimensions
     this.gridWidth = Math.floor(gameConfig.width / gameConfig.gridSize);
@@ -42,6 +49,14 @@ export class GameScene extends Scene {
     });
 
     // Setup keyboard controls
+    this.setupControls();
+  }
+
+  private setupControls() {
+    // Clean up existing key bindings if they exist
+    this.input.keyboard?.removeAllKeys(true);
+
+    // Add new key bindings
     this.input.keyboard?.addKey('UP').on('down', () => {
       this.snake.setDirection(Direction.UP);
     });
@@ -55,11 +70,9 @@ export class GameScene extends Scene {
       this.snake.setDirection(Direction.RIGHT);
     });
     this.input.keyboard?.addKey('ESC').on('down', () => {
+      this.cleanupScene();
       this.scene.start('MenuScene');
     });
-
-    // Initialize move timer
-    this.moveTimer = 0;
   }
 
   update(time: number, delta: number) {
@@ -146,5 +159,20 @@ export class GameScene extends Scene {
       color: '#ff0000'
     });
     text.setOrigin(0.5);
+  }
+
+  private cleanupScene() {
+    // Clear graphics
+    if (this.graphics) {
+      this.graphics.clear();
+      this.graphics.destroy();
+    }
+
+    // Remove keyboard bindings
+    this.input.keyboard?.removeAllKeys(true);
+  }
+
+  shutdown() {
+    this.cleanupScene();
   }
 } 

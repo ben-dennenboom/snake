@@ -79,13 +79,27 @@ Implemented classic Snake game with:
 - Created procedures for documentation updates
 - Set commit message guidelines
 
+## Game Restart Bug Fix
+
+**Prompt:**
+> Let's continue. There is a problem with the game. The first time I play it, it all works. When I return to the menu and press play for the second time, the game does not work. I do not see any errors. The snake and candy are not on the screen
+
+**Response Summary:**
+- Added proper scene cleanup and initialization
+- Implemented `init()` method to reset game state
+- Created `cleanupScene()` method to properly destroy graphics and remove event listeners
+- Added `shutdown()` method for scene cleanup
+- Separated control setup into its own method
+- Fixed graphics context handling for proper scene restarts
+
 ## Current Status
-The game is now playable with all core mechanics implemented, featuring:
+The game is now playable with all core mechanics implemented and bug fixes:
 - Loading screen
 - Menu with top score
 - Classic snake gameplay
 - Score tracking
 - Game over screen
 - Comprehensive documentation including AI contribution guidelines
+- Proper scene cleanup and restart functionality
 
 *This log will be updated as development continues.* 
