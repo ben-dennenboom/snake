@@ -2,6 +2,12 @@
 
 A faithful recreation of the classic Nokia 5110 Snake game built with Phaser 3, Vite, and TypeScript. This game is designed to work on web browsers and can be ported to iOS and Android using Capacitor.
 
+## 🤖 Why This Project?
+
+This project was created as an experiment in AI-assisted development using Cursor IDE. Despite having no prior experience with TypeScript or Phaser.js, I was able to build this game from scratch with the help of AI. The goal was to explore how artificial intelligence can assist in learning new programming languages and frameworks while creating something nostalgic and fun.
+
+The development process, documented in `PROMPT_LOG.md`, showcases the potential of AI pair programming and demonstrates how tools like Cursor can help developers venture into unfamiliar technical territories with confidence.
+
 ## 🎮 Features
 
 - Authentic Nokia 5110 LCD display aesthetics
