@@ -1,5 +1,5 @@
 import { Scene } from 'phaser';
-import { gameConfig, Direction, GridPosition, setTopScore, getTopScore } from '../config/gameConfig';
+import { gameConfig, Direction, GridPosition, setTopScore } from '../config/gameConfig';
 import { Snake } from '../game/Snake';
 
 interface SwipeState {
@@ -134,7 +134,7 @@ export class GameScene extends Scene {
     });
   }
 
-  update(time: number, delta: number) {
+  update(_time: number, delta: number) {
     if (this.gameOver) return;
 
     // Update move timer
