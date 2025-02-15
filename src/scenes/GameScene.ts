@@ -2,6 +2,12 @@ import { Scene } from 'phaser';
 import { gameConfig, Direction, GridPosition, setTopScore, getTopScore } from '../config/gameConfig';
 import { Snake } from '../game/Snake';
 
+interface SwipeState {
+  startX: number;
+  startY: number;
+  startTime: number;
+}
+
 export class GameScene extends Scene {
   private snake!: Snake;
   private candy!: GridPosition;
@@ -12,6 +18,9 @@ export class GameScene extends Scene {
   private score: number = 0;
   private scoreText!: Phaser.GameObjects.Text;
   private gameOver: boolean = false;
+  private swipeState: SwipeState | null = null;
+  private readonly minSwipeDistance: number = 30; // Minimum distance for a swipe
+  private readonly maxSwipeTime: number = 1000; // Maximum time for a swipe in ms
 
   constructor() {
     super({ key: 'GameScene' });
@@ -22,6 +31,7 @@ export class GameScene extends Scene {
     this.score = 0;
     this.moveTimer = 0;
     this.gameOver = false;
+    this.swipeState = null;
   }
 
   create() {
@@ -48,7 +58,7 @@ export class GameScene extends Scene {
       color: '#ffffff'
     });
 
-    // Setup keyboard controls
+    // Setup controls
     this.setupControls();
   }
 
@@ -56,7 +66,7 @@ export class GameScene extends Scene {
     // Clean up existing key bindings if they exist
     this.input.keyboard?.removeAllKeys(true);
 
-    // Add new key bindings
+    // Keyboard controls
     this.input.keyboard?.addKey('UP').on('down', () => {
       this.snake.setDirection(Direction.UP);
     });
@@ -72,6 +82,55 @@ export class GameScene extends Scene {
     this.input.keyboard?.addKey('ESC').on('down', () => {
       this.cleanupScene();
       this.scene.start('MenuScene');
+    });
+
+    // Touch/Swipe controls
+    this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
+      this.swipeState = {
+        startX: pointer.x,
+        startY: pointer.y,
+        startTime: Date.now()
+      };
+    });
+
+    this.input.on('pointerup', (pointer: Phaser.Input.Pointer) => {
+      if (!this.swipeState) return;
+
+      const swipeTime = Date.now() - this.swipeState.startTime;
+      if (swipeTime > this.maxSwipeTime) {
+        this.swipeState = null;
+        return;
+      }
+
+      const deltaX = pointer.x - this.swipeState.startX;
+      const deltaY = pointer.y - this.swipeState.startY;
+      const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+
+      if (distance >= this.minSwipeDistance) {
+        // Determine swipe direction based on which axis had the larger change
+        if (Math.abs(deltaX) > Math.abs(deltaY)) {
+          // Horizontal swipe
+          if (deltaX > 0) {
+            this.snake.setDirection(Direction.RIGHT);
+          } else {
+            this.snake.setDirection(Direction.LEFT);
+          }
+        } else {
+          // Vertical swipe
+          if (deltaY > 0) {
+            this.snake.setDirection(Direction.DOWN);
+          } else {
+            this.snake.setDirection(Direction.UP);
+          }
+        }
+      }
+
+      this.swipeState = null;
+    });
+
+    // Cancel swipe on pointer move out
+    this.input.on('pointerout', () => {
+      this.swipeState = null;
     });
   }
 

@@ -92,8 +92,27 @@ Implemented classic Snake game with:
 - Separated control setup into its own method
 - Fixed graphics context handling for proper scene restarts
 
+## Mobile Controls Implementation
+
+**Prompt:**
+> Lets make it work on mobile, where we don't have a keyboard. So keep the keyboard controls but add swiping to turn the snake in the direction.
+
+**Response Summary:**
+- Added swipe controls while maintaining keyboard support
+- Implemented swipe detection with configurable parameters:
+  - Minimum swipe distance (30 pixels)
+  - Maximum swipe time (1000ms)
+- Added swipe state management
+- Implemented directional swipe logic:
+  - Horizontal swipes for left/right
+  - Vertical swipes for up/down
+- Added pointer event handlers for:
+  - pointerdown (start of swipe)
+  - pointerup (end of swipe)
+  - pointerout (cancel swipe)
+
 ## Current Status
-The game is now playable with all core mechanics implemented and bug fixes:
+The game is now playable with all core mechanics implemented and mobile support:
 - Loading screen
 - Menu with top score
 - Classic snake gameplay
@@ -101,5 +120,8 @@ The game is now playable with all core mechanics implemented and bug fixes:
 - Game over screen
 - Comprehensive documentation including AI contribution guidelines
 - Proper scene cleanup and restart functionality
+- Cross-platform controls:
+  - Keyboard arrows on desktop
+  - Swipe controls on mobile
 
 *This log will be updated as development continues.* 
