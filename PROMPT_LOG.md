@@ -245,6 +245,28 @@ Implemented classic Snake game with:
   - Set camera background color explicitly
   - Maintained Nokia 5110's greenish color throughout
 
+## README Updates
+
+**Prompt:**
+> In the readme, can you replace all references to modern graphics with retro graphics
+
+**Response Summary:**
+- Updated README to reflect retro aesthetics:
+  - Changed description to emphasize Nokia 5110 recreation
+  - Added retro-specific features
+  - Updated project structure to include effects
+  - Added Nokia acknowledgment
+
+**Prompt:**
+> In the readme, before Features, add a piece about why this was build. I've build this to try Cursor and build something in a programming language I do not know with AI
+
+**Response Summary:**
+- Added "Why This Project?" section to README:
+  - Explained AI-assisted development with Cursor IDE
+  - Highlighted learning new technologies (TypeScript, Phaser.js)
+  - Referenced PROMPT_LOG.md for development process
+  - Emphasized AI pair programming benefits
+
 ## Current Status
 The game is now fully playable on both desktop and mobile, and ready for web deployment:
 - Loading screen
