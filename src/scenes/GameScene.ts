@@ -1,4 +1,4 @@
-import { Scene } from 'phaser';
+import { BaseScene } from './BaseScene';
 import { gameConfig, Direction, GridPosition, setTopScore } from '../config/gameConfig';
 import { Snake } from '../game/Snake';
 
@@ -8,7 +8,7 @@ interface SwipeState {
   startTime: number;
 }
 
-export class GameScene extends Scene {
+export class GameScene extends BaseScene {
   private snake!: Snake;
   private candy!: Phaser.GameObjects.Rectangle;
   private score: number = 0;
@@ -32,6 +32,9 @@ export class GameScene extends Scene {
   }
 
   create() {
+    // Initialize retro effects
+    super.create();
+
     // Initialize snake
     this.snake = new Snake(this, gameConfig.pixelColor);
     
@@ -125,6 +128,8 @@ export class GameScene extends Scene {
   }
 
   update(time: number) {
+    super.update(time, 0);
+
     if (time - this.lastUpdate > 1000 / gameConfig.snakeSpeed) {
       this.lastUpdate = time;
 

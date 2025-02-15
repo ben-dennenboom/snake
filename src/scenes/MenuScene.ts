@@ -1,12 +1,15 @@
-import { Scene } from 'phaser';
+import { BaseScene } from './BaseScene';
 import { gameConfig, getTopScore } from '../config/gameConfig';
 
-export class MenuScene extends Scene {
+export class MenuScene extends BaseScene {
   constructor() {
     super({ key: 'MenuScene' });
   }
 
   create() {
+    // Initialize retro effects
+    super.create();
+
     const { width, height } = gameConfig;
 
     // Title
@@ -71,5 +74,9 @@ export class MenuScene extends Scene {
         this.scene.start('GameScene');
       });
     });
+  }
+
+  update(time: number, delta: number) {
+    super.update(time, delta);
   }
 } 

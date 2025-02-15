@@ -220,6 +220,31 @@ Implemented classic Snake game with:
   - Prevented accidental double-clicks during scene transitions
   - Added same protection to keyboard ESC controls
 
+## Simplified Retro Effects
+
+**Prompt:**
+> No, that is not good. The background is black, I preffered the green background. Change that and add screen border.
+
+**Response Summary:**
+- Simplified retro effects to match original style:
+  - Removed black background overlay
+  - Kept original green background color
+  - Added device-style border frame
+  - Removed unnecessary visual effects
+  - Maintained clean, authentic look
+
+## Background Color Fix
+
+**Prompt:**
+> The background is still black
+
+**Response Summary:**
+- Fixed background color issues:
+  - Updated HTML body background color
+  - Ensured consistent background in base scene
+  - Set camera background color explicitly
+  - Maintained Nokia 5110's greenish color throughout
+
 ## Current Status
 The game is now fully playable on both desktop and mobile, and ready for web deployment:
 - Loading screen
@@ -242,7 +267,8 @@ The game is now fully playable on both desktop and mobile, and ready for web dep
 - Retro styling:
   - Nokia 5110 color scheme
   - Authentic resolution and scaling
-  - Clean monochrome display without grid overlay
-  - Consistent UI elements and colors across all screens
+  - Clean monochrome display
+  - Consistent UI elements and colors
+  - Simple device border frame
 
 *This log will be updated as development continues.* 
