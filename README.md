@@ -1,10 +1,12 @@
 # Snake 🐍
 
-A modern, cross-platform Snake game built with Phaser 3, Vite, and TypeScript. This game is designed to work on web browsers and can be ported to iOS and Android using Capacitor.
+A faithful recreation of the classic Nokia 5110 Snake game built with Phaser 3, Vite, and TypeScript. This game is designed to work on web browsers and can be ported to iOS and Android using Capacitor.
 
 ## 🎮 Features
 
-- Classic Snake gameplay with modern graphics
+- Authentic Nokia 5110 LCD display aesthetics
+- Monochrome pixel graphics
+- Device-style screen border
 - Responsive design that works on all devices
 - Cross-platform support (Web, iOS*, Android*)
 - Modern development stack with hot reload
@@ -51,8 +53,9 @@ npm run preview
 
 - `src/` - Source code
   - `scenes/` - Phaser game scenes
+  - `effects/` - Retro visual effects
   - `main.ts` - Game entry point
-- `public/` - Static assets (images, sounds, etc.)
+- `public/` - Static assets
 - `dist/` - Production build output
 
 ## 🛠 Technologies Used
@@ -72,6 +75,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🙏 Acknowledgments
 
+- Nokia for the original Snake game inspiration
 - Phaser.js community for their excellent documentation
 - The Vite team for the amazing build tool
 - All contributors who help improve this game 
