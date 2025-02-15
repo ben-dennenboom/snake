@@ -15,14 +15,15 @@ export class RetroFont {
         [1,0,0,1,0],
         [1,0,0,1,0],
         [0,0,0,0,0]
-      ],
+      ] as number[][],
       // Add more characters as needed...
-    }
+    } as { [key: string]: number[][] }
   };
 
   static createText(scene: Phaser.Scene, x: number, y: number, text: string, scale: number = 1) {
     const graphics = scene.add.graphics();
-    graphics.fillStyle(parseInt(scene.game.config.backgroundColor as string, 16));
+    const backgroundColor = scene.game.config.backgroundColor;
+    graphics.fillStyle(typeof backgroundColor === 'number' ? backgroundColor : parseInt(backgroundColor.toString(), 16));
 
     let currentX = x;
     const pixelSize = scale;

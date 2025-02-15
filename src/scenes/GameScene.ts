@@ -1,12 +1,6 @@
 import { BaseScene } from './BaseScene';
-import { gameConfig, Direction, GridPosition, setTopScore } from '../config/gameConfig';
+import { gameConfig, Direction, GridPosition } from '../config/gameConfig';
 import { Snake } from '../game/Snake';
-
-interface SwipeState {
-  startX: number;
-  startY: number;
-  startTime: number;
-}
 
 export class GameScene extends BaseScene {
   private snake!: Snake;

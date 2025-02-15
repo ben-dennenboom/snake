@@ -13,7 +13,7 @@ export class BaseScene extends Scene {
     this.retroEffect = new RetroEffect(this);
   }
 
-  update(time: number, delta: number) {
+  update(_time: number, _delta: number) {
     // Update retro effects
     this.retroEffect.update();
   }
