@@ -10,17 +10,14 @@ interface SwipeState {
 
 export class GameScene extends Scene {
   private snake!: Snake;
-  private candy!: GridPosition;
-  private gridWidth!: number;
-  private gridHeight!: number;
-  private graphics!: Phaser.GameObjects.Graphics;
-  private moveTimer!: number;
+  private candy!: Phaser.GameObjects.Rectangle;
   private score: number = 0;
   private scoreText!: Phaser.GameObjects.Text;
-  private gameOver: boolean = false;
-  private swipeState: SwipeState | null = null;
-  private readonly minSwipeDistance: number = 30; // Minimum distance for a swipe
-  private readonly maxSwipeTime: number = 1000; // Maximum time for a swipe in ms
+  private lastUpdate: number = 0;
+  private swipeStartPosition: { x: number; y: number } | null = null;
+  private swipeStartTime: number = 0;
+  private readonly minSwipeDistance: number = 30;
+  private readonly maxSwipeTime: number = 1000;
 
   constructor() {
     super({ key: 'GameScene' });
@@ -29,33 +26,23 @@ export class GameScene extends Scene {
   init() {
     // Reset game state
     this.score = 0;
-    this.moveTimer = 0;
-    this.gameOver = false;
-    this.swipeState = null;
+    this.lastUpdate = 0;
+    this.swipeStartPosition = null;
+    this.swipeStartTime = 0;
   }
 
   create() {
-    // Calculate grid dimensions
-    this.gridWidth = Math.floor(gameConfig.width / gameConfig.gridSize);
-    this.gridHeight = Math.floor(gameConfig.height / gameConfig.gridSize);
-
-    // Initialize snake in the middle of the grid
-    const startPos: GridPosition = {
-      x: Math.floor(this.gridWidth / 2),
-      y: Math.floor(this.gridHeight / 2)
-    };
-    this.snake = new Snake(startPos);
-
-    // Create graphics object for drawing
-    this.graphics = this.add.graphics();
-
-    // Spawn initial candy
+    // Initialize snake
+    this.snake = new Snake(this, gameConfig.pixelColor);
+    
+    // Create candy
     this.spawnCandy();
-
-    // Setup score display
-    this.scoreText = this.add.text(16, 16, 'Score: 0', {
-      fontSize: '32px',
-      color: '#ffffff'
+    
+    // Add score text with Nokia style
+    this.scoreText = this.add.text(10, 10, 'Score: 0', {
+      fontFamily: 'monospace',
+      fontSize: '16px',
+      color: gameConfig.pixelColor
     });
 
     // Setup controls
@@ -86,24 +73,25 @@ export class GameScene extends Scene {
 
     // Touch/Swipe controls
     this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
-      this.swipeState = {
-        startX: pointer.x,
-        startY: pointer.y,
-        startTime: Date.now()
+      this.swipeStartPosition = {
+        x: pointer.x,
+        y: pointer.y
       };
+      this.swipeStartTime = Date.now();
     });
 
     this.input.on('pointerup', (pointer: Phaser.Input.Pointer) => {
-      if (!this.swipeState) return;
+      if (!this.swipeStartPosition) return;
 
-      const swipeTime = Date.now() - this.swipeState.startTime;
+      const swipeTime = Date.now() - this.swipeStartTime;
       if (swipeTime > this.maxSwipeTime) {
-        this.swipeState = null;
+        this.swipeStartPosition = null;
+        this.swipeStartTime = 0;
         return;
       }
 
-      const deltaX = pointer.x - this.swipeState.startX;
-      const deltaY = pointer.y - this.swipeState.startY;
+      const deltaX = pointer.x - this.swipeStartPosition.x;
+      const deltaY = pointer.y - this.swipeStartPosition.y;
       const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
 
       if (distance >= this.minSwipeDistance) {
@@ -125,101 +113,87 @@ export class GameScene extends Scene {
         }
       }
 
-      this.swipeState = null;
+      this.swipeStartPosition = null;
+      this.swipeStartTime = 0;
     });
 
     // Cancel swipe on pointer move out
     this.input.on('pointerout', () => {
-      this.swipeState = null;
+      this.swipeStartPosition = null;
+      this.swipeStartTime = 0;
     });
   }
 
-  update(_time: number, delta: number) {
-    if (this.gameOver) return;
+  update(time: number) {
+    if (time - this.lastUpdate > 1000 / gameConfig.snakeSpeed) {
+      this.lastUpdate = time;
 
-    // Update move timer
-    this.moveTimer += delta;
-    if (this.moveTimer >= 1000 / gameConfig.snakeSpeed) {
-      this.moveTimer = 0;
-      this.updateGame();
+      // Move snake
+      this.snake.move();
+
+      // Check for collisions
+      if (this.snake.checkCollision()) {
+        this.gameOver();
+        return;
+      }
+
+      // Check for candy collection
+      const head = this.snake.getHead();
+      const candyX = Math.floor(this.candy.x / gameConfig.gridSize);
+      const candyY = Math.floor(this.candy.y / gameConfig.gridSize);
+
+      if (head.x === candyX && head.y === candyY) {
+        this.score++;
+        this.scoreText.setText(`Score: ${this.score}`);
+        this.snake.grow();
+        this.spawnCandy();
+      }
     }
-
-    // Draw game state
-    this.drawGame();
-  }
-
-  private updateGame() {
-    // Move snake
-    this.snake.update();
-
-    // Check for candy collision
-    const head = this.snake.getHead();
-    if (head.x === this.candy.x && head.y === this.candy.y) {
-      this.snake.grow();
-      this.score++;
-      this.scoreText.setText(`Score: ${this.score}`);
-      this.spawnCandy();
-    }
-
-    // Check for collisions
-    if (
-      this.snake.checkWallCollision(this.gridWidth, this.gridHeight) ||
-      this.snake.checkSelfCollision()
-    ) {
-      this.handleGameOver();
-    }
-  }
-
-  private drawGame() {
-    this.graphics.clear();
-
-    // Draw snake
-    this.graphics.fillStyle(0x00ff00); // Green
-    const body = this.snake.getBody();
-    body.forEach(segment => {
-      this.graphics.fillRect(
-        segment.x * gameConfig.gridSize,
-        segment.y * gameConfig.gridSize,
-        gameConfig.gridSize - 1,
-        gameConfig.gridSize - 1
-      );
-    });
-
-    // Draw candy
-    this.graphics.fillStyle(0xff0000); // Red
-    this.graphics.fillRect(
-      this.candy.x * gameConfig.gridSize,
-      this.candy.y * gameConfig.gridSize,
-      gameConfig.gridSize - 1,
-      gameConfig.gridSize - 1
-    );
   }
 
   private spawnCandy() {
+    if (this.candy) {
+      this.candy.destroy();
+    }
+
+    const gridWidth = Math.floor(gameConfig.width / gameConfig.gridSize);
+    const gridHeight = Math.floor(gameConfig.height / gameConfig.gridSize);
+    
+    let position: GridPosition;
     do {
-      this.candy = {
-        x: Math.floor(Math.random() * this.gridWidth),
-        y: Math.floor(Math.random() * this.gridHeight)
+      position = {
+        x: Math.floor(Math.random() * gridWidth),
+        y: Math.floor(Math.random() * gridHeight)
       };
-    } while (this.snake.checkCollision(this.candy));
+    } while (this.snake.getBody().some(segment => 
+      segment.x === position.x && segment.y === position.y
+    ));
+
+    this.candy = this.add.rectangle(
+      position.x * gameConfig.gridSize,
+      position.y * gameConfig.gridSize,
+      gameConfig.gridSize - 1,
+      gameConfig.gridSize - 1,
+      parseInt(gameConfig.pixelColor.replace('#', '0x'))
+    );
   }
 
-  private handleGameOver() {
-    this.gameOver = true;
-    
-    // Update top score if necessary
-    setTopScore(this.score);
-
-    // Show game over text
-    const gameOverText = this.add.text(gameConfig.width / 2, gameConfig.height / 2 - 50, 
-      'Game Over!', {
-      align: 'center',
-      fontSize: '48px',
-      color: '#ff0000'
-    });
+  private gameOver() {
+    // Show game over text with Nokia style
+    const gameOverText = this.add.text(
+      gameConfig.width / 2,
+      gameConfig.height / 2 - 50,
+      'Game Over!',
+      {
+        fontFamily: 'monospace',
+        fontSize: '24px',
+        color: gameConfig.pixelColor,
+        align: 'center'
+      }
+    );
     gameOverText.setOrigin(0.5);
 
-    // Create return to menu button
+    // Create return to menu button with Nokia style
     const buttonWidth = 200;
     const buttonHeight = 50;
     const button = this.add.rectangle(
@@ -227,28 +201,30 @@ export class GameScene extends Scene {
       gameConfig.height / 2 + 50,
       buttonWidth,
       buttonHeight,
-      0x00ff00
+      parseInt(gameConfig.pixelColor.replace('#', '0x'))
     );
     
-    const buttonText = this.add.text(gameConfig.width / 2, gameConfig.height / 2 + 50,
-      'Return to Menu', {
-      fontSize: '24px',
-      color: '#000000'
-    });
+    const buttonText = this.add.text(
+      gameConfig.width / 2,
+      gameConfig.height / 2 + 50,
+      'Return to Menu',
+      {
+        fontFamily: 'monospace',
+        fontSize: '16px',
+        color: gameConfig.screenColor,
+        align: 'center'
+      }
+    );
     buttonText.setOrigin(0.5);
 
-    // Make button interactive
     button.setInteractive();
     
-    // Add hover effects
     button.on('pointerover', () => {
-      button.setFillStyle(0x00dd00);
-      this.input.setDefaultCursor('pointer');
+      button.setFillStyle(parseInt(gameConfig.pixelColor.replace('#', '0x')), 0.8);
     });
     
     button.on('pointerout', () => {
-      button.setFillStyle(0x00ff00);
-      this.input.setDefaultCursor('default');
+      button.setFillStyle(parseInt(gameConfig.pixelColor.replace('#', '0x')));
     });
     
     button.on('pointerdown', () => {
@@ -264,12 +240,6 @@ export class GameScene extends Scene {
   }
 
   private cleanupScene() {
-    // Clear graphics
-    if (this.graphics) {
-      this.graphics.clear();
-      this.graphics.destroy();
-    }
-
     // Remove keyboard bindings
     this.input.keyboard?.removeAllKeys(true);
   }

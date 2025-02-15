@@ -7,6 +7,9 @@ export interface GameConfig {
   gridSize: number;
   snakeSpeed: number;
   initialSnakeLength: number;
+  // Nokia 5110 colors
+  pixelColor: string;
+  screenColor: string;
 }
 
 export interface GridPosition {
@@ -22,12 +25,15 @@ export enum Direction {
 }
 
 export const gameConfig: GameConfig = {
-  width: 800,
-  height: 600,
-  backgroundColor: '#34495e',
-  gridSize: 20, // Size of each grid cell
-  snakeSpeed: 10, // Grid cells per second
-  initialSnakeLength: 3
+  // Original resolution scaled up by 6 for visibility (84x48 * 6)
+  width: 504,
+  height: 288,
+  backgroundColor: '#C3CFA1', // Nokia 5110 greenish background
+  gridSize: 6, // Each Nokia "pixel" is 6x6 screen pixels
+  snakeSpeed: 10,
+  initialSnakeLength: 3,
+  pixelColor: '#1F1F1F', // Dark pixels
+  screenColor: '#C3CFA1' // LCD background color
 };
 
 export const getTopScore = (): number => {

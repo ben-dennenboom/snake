@@ -11,42 +11,59 @@ export class MenuScene extends Scene {
 
     // Title
     const title = this.add.text(width / 2, height / 3, 'Snake', {
-      fontSize: '64px',
-      color: '#ffffff',
-      fontStyle: 'bold'
+      fontFamily: 'monospace',
+      fontSize: '48px',
+      color: gameConfig.pixelColor,
+      align: 'center'
     });
     title.setOrigin(0.5);
 
     // Top Score
     const topScore = getTopScore();
     const scoreText = this.add.text(width / 2, height / 2, `Top Score: ${topScore}`, {
-      fontSize: '32px',
-      color: '#ffffff'
+      fontFamily: 'monospace',
+      fontSize: '24px',
+      color: gameConfig.pixelColor,
+      align: 'center'
     });
     scoreText.setOrigin(0.5);
 
     // Start Button
-    const startButton = this.add.rectangle(width / 2, height * 0.7, 200, 50, 0x00ff00);
-    const startText = this.add.text(width / 2, height * 0.7, 'Start Game', {
-      fontSize: '24px',
-      color: '#000000'
-    });
-    startText.setOrigin(0.5);
+    const buttonWidth = 200;
+    const buttonHeight = 50;
+    const button = this.add.rectangle(
+      width / 2,
+      height * 0.7,
+      buttonWidth,
+      buttonHeight,
+      parseInt(gameConfig.pixelColor.replace('#', '0x'))
+    );
+    
+    const buttonText = this.add.text(
+      width / 2,
+      height * 0.7,
+      'Start Game',
+      {
+        fontFamily: 'monospace',
+        fontSize: '16px',
+        color: gameConfig.screenColor,
+        align: 'center'
+      }
+    );
+    buttonText.setOrigin(0.5);
 
     // Make button interactive
-    startButton.setInteractive();
-    startButton.on('pointerover', () => {
-      startButton.setFillStyle(0x00dd00);
-      this.input.setDefaultCursor('pointer');
+    button.setInteractive();
+    
+    button.on('pointerover', () => {
+      button.setFillStyle(parseInt(gameConfig.pixelColor.replace('#', '0x')), 0.8);
     });
-    startButton.on('pointerout', () => {
-      startButton.setFillStyle(0x00ff00);
-      this.input.setDefaultCursor('default');
+    
+    button.on('pointerout', () => {
+      button.setFillStyle(parseInt(gameConfig.pixelColor.replace('#', '0x')));
     });
-    startButton.on('pointerdown', () => {
-      startButton.setFillStyle(0x00bb00);
-    });
-    startButton.on('pointerup', () => {
+    
+    button.on('pointerup', () => {
       this.scene.start('GameScene');
     });
   }

@@ -1,61 +1,101 @@
 import { Direction, GridPosition, gameConfig } from '../config/gameConfig';
+import * as Phaser from 'phaser';
 
 export class Snake {
-  private body: GridPosition[];
+  private segments: Phaser.GameObjects.Rectangle[] = [];
+  private positions: GridPosition[] = [];
+  private scene: Phaser.Scene;
+  private color: string;
   private direction: Direction;
   private nextDirection: Direction;
   private growing: boolean;
 
-  constructor(startPosition: GridPosition) {
+  constructor(scene: Phaser.Scene, color: string) {
+    this.scene = scene;
+    this.color = color;
     this.direction = Direction.RIGHT;
     this.nextDirection = Direction.RIGHT;
     this.growing = false;
-    
-    // Initialize snake body
-    this.body = [];
+    this.createInitialSnake();
+  }
+
+  private createInitialSnake() {
+    // Clear existing snake
+    this.segments.forEach(segment => segment.destroy());
+    this.segments = [];
+    this.positions = [];
+
+    // Create initial snake segments
+    const startX = Math.floor(gameConfig.width / gameConfig.gridSize / 4);
+    const startY = Math.floor(gameConfig.height / gameConfig.gridSize / 2);
+
     for (let i = 0; i < gameConfig.initialSnakeLength; i++) {
-      this.body.push({
-        x: startPosition.x - i,
-        y: startPosition.y
+      // Add grid position
+      this.positions.push({
+        x: startX - i,
+        y: startY
       });
+
+      // Add visual segment
+      const segment = this.scene.add.rectangle(
+        (startX - i) * gameConfig.gridSize,
+        startY * gameConfig.gridSize,
+        gameConfig.gridSize - 1,
+        gameConfig.gridSize - 1,
+        parseInt(this.color.replace('#', '0x'))
+      );
+      this.segments.push(segment);
     }
   }
 
-  update(): void {
-    // Update direction
-    this.direction = this.nextDirection;
+  move() {
+    if (this.growing) {
+      this.growing = false;
+    } else {
+      // Remove tail
+      const tailSegment = this.segments.pop();
+      if (tailSegment) {
+        tailSegment.destroy();
+      }
+      this.positions.pop();
+    }
 
     // Calculate new head position
-    const head = this.body[0];
-    const newHead: GridPosition = { x: head.x, y: head.y };
+    const head = { ...this.positions[0] };
+    this.direction = this.nextDirection;
 
     switch (this.direction) {
       case Direction.UP:
-        newHead.y--;
+        head.y--;
         break;
       case Direction.DOWN:
-        newHead.y++;
+        head.y++;
         break;
       case Direction.LEFT:
-        newHead.x--;
+        head.x--;
         break;
       case Direction.RIGHT:
-        newHead.x++;
+        head.x++;
         break;
     }
 
     // Add new head
-    this.body.unshift(newHead);
-
-    // Remove tail if not growing
-    if (!this.growing) {
-      this.body.pop();
-    } else {
-      this.growing = false;
-    }
+    this.positions.unshift(head);
+    const newSegment = this.scene.add.rectangle(
+      head.x * gameConfig.gridSize,
+      head.y * gameConfig.gridSize,
+      gameConfig.gridSize - 1,
+      gameConfig.gridSize - 1,
+      parseInt(this.color.replace('#', '0x'))
+    );
+    this.segments.unshift(newSegment);
   }
 
-  setDirection(newDirection: Direction): void {
+  grow() {
+    this.growing = true;
+  }
+
+  setDirection(newDirection: Direction) {
     // Prevent 180-degree turns
     if (
       (this.direction === Direction.UP && newDirection === Direction.DOWN) ||
@@ -68,38 +108,40 @@ export class Snake {
     this.nextDirection = newDirection;
   }
 
-  grow(): void {
-    this.growing = true;
-  }
-
   getHead(): GridPosition {
-    return this.body[0];
+    return this.positions[0];
   }
 
   getBody(): GridPosition[] {
-    return this.body;
+    return this.positions;
   }
 
-  checkCollision(position: GridPosition): boolean {
-    return this.body.some(segment => 
-      segment.x === position.x && segment.y === position.y
-    );
-  }
-
-  checkSelfCollision(): boolean {
+  checkCollision(): boolean {
     const head = this.getHead();
-    return this.body.slice(1).some(segment => 
-      segment.x === head.x && segment.y === head.y
-    );
-  }
-
-  checkWallCollision(gridWidth: number, gridHeight: number): boolean {
-    const head = this.getHead();
-    return (
+    
+    // Check wall collision
+    if (
       head.x < 0 ||
-      head.x >= gridWidth ||
+      head.x >= gameConfig.width / gameConfig.gridSize ||
       head.y < 0 ||
-      head.y >= gridHeight
-    );
+      head.y >= gameConfig.height / gameConfig.gridSize
+    ) {
+      return true;
+    }
+
+    // Check self collision (skip head)
+    for (let i = 1; i < this.positions.length; i++) {
+      if (head.x === this.positions[i].x && head.y === this.positions[i].y) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  destroy() {
+    this.segments.forEach(segment => segment.destroy());
+    this.segments = [];
+    this.positions = [];
   }
 } 
