@@ -52,19 +52,24 @@ export class MenuScene extends Scene {
     );
     buttonText.setOrigin(0.5);
 
-    // Make button interactive
-    button.setInteractive();
-    
-    button.on('pointerover', () => {
-      button.setFillStyle(parseInt(gameConfig.pixelColor.replace('#', '0x')), 0.8);
-    });
-    
-    button.on('pointerout', () => {
-      button.setFillStyle(parseInt(gameConfig.pixelColor.replace('#', '0x')));
-    });
-    
-    button.on('pointerup', () => {
-      this.scene.start('GameScene');
+    // Delay button interaction to prevent accidental clicks during scene transition
+    this.time.delayedCall(200, () => {
+      // Make button interactive
+      button.setInteractive();
+      
+      button.on('pointerover', () => {
+        button.setFillStyle(parseInt(gameConfig.pixelColor.replace('#', '0x')), 0.8);
+      });
+      
+      button.on('pointerout', () => {
+        button.setFillStyle(parseInt(gameConfig.pixelColor.replace('#', '0x')));
+      });
+      
+      button.on('pointerdown', () => {
+        // Disable button immediately to prevent multiple clicks
+        button.disableInteractive();
+        this.scene.start('GameScene');
+      });
     });
   }
 } 

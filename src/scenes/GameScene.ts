@@ -228,12 +228,15 @@ export class GameScene extends Scene {
     });
     
     button.on('pointerdown', () => {
+      // Disable button immediately to prevent multiple clicks
+      button.disableInteractive();
       this.cleanupScene();
       this.scene.start('MenuScene');
     });
 
     // Keep keyboard ESC functionality for desktop
     this.input.keyboard?.addKey('ESC').on('down', () => {
+      button.disableInteractive();
       this.cleanupScene();
       this.scene.start('MenuScene');
     });

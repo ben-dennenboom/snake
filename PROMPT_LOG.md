@@ -208,6 +208,18 @@ Implemented classic Snake game with:
   - All button backgrounds use gameConfig.pixelColor
   - Confirmed matching colors between menu and game scenes
 
+## Button Click-Through Fix
+
+**Prompt:**
+> When I click the "return to menu" and hold it to long, the start screen loads and I also click on the sart button, starting a new game. How can we prevent this?
+
+**Response Summary:**
+- Fixed button click-through issues between scenes:
+  - Added 200ms delay before enabling menu button interactions
+  - Disabled buttons immediately after clicking
+  - Prevented accidental double-clicks during scene transitions
+  - Added same protection to keyboard ESC controls
+
 ## Current Status
 The game is now fully playable on both desktop and mobile, and ready for web deployment:
 - Loading screen
@@ -224,6 +236,7 @@ The game is now fully playable on both desktop and mobile, and ready for web dep
   - Keyboard arrows on desktop
   - Swipe controls on mobile
   - Touch-friendly menus and buttons
+  - Protected against accidental clicks during transitions
 - Production-ready build configuration
 - Version control guidelines
 - Retro styling:
